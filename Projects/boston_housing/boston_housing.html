@@ -11779,7 +11779,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Import libraries necessary for this project</span>
@@ -11851,23 +11851,24 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># TODO: Minimum price of the data</span>
-<span class="n">minimum_price</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">minimum_price</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
 
 <span class="c1"># TODO: Maximum price of the data</span>
-<span class="n">maximum_price</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">maximum_price</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
 
 <span class="c1"># TODO: Mean price of the data</span>
-<span class="n">mean_price</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">mean_price</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
 
 <span class="c1"># TODO: Median price of the data</span>
-<span class="n">median_price</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">median_price</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
 
 <span class="c1"># TODO: Standard deviation of prices of the data</span>
-<span class="n">std_price</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="n">std_price</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
+
 
 <span class="c1"># Show the calculated statistics</span>
 <span class="k">print</span> <span class="s2">&quot;Statistics for Boston housing dataset:</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -11894,7 +11895,7 @@ Minimum price: $105,000.00
 Maximum price: $1,024,800.00
 Mean price: $454,342.94
 Median price $438,900.00
-Standard deviation of prices: $165,340.28
+Standard deviation of prices: $165,171.13
 </pre>
 </div>
 </div>
@@ -14723,6 +14724,8 @@ WkREREQP+w/SkOCeXB+eaAAAAABJRU5ErkJggg==
 </li>
 <li><p>With grid space search, K-Fold helps to address the issue to relying on one test set to choose the winner among all the models. If the test set is not representative, or is biased towards a particular combination of those parameters, the grid search technique may falsely choose the less optimum model based on the evaluation score. With K-Fold, each combination of parameters are trained and evaluated K times on different folds of training and test set and hance reduces the biases/un-representativeness of test set for evaluation.</p>
 </li>
+<li><p>With K-Folds, we end up having K predictions for each of the samples. One way to combine these predictions for regression problems is by weighted mean. The weights could be same (which is the most basic form) or can be different by looking at the evaluation performace of each of the k models on the test fold. In case of classification, we can rely on majority votes (or may be weighted majority votes as in case of regression). If models also expose the probability of each of the classes in predictions, we can combine these probability scores from K models and compute the final probability distribution across classes and choose the one with highest probability.</p>
+</li>
 </ul>
 
 </div>
@@ -14864,6 +14867,7 @@ For the <code>fit_model</code> function in the code cell below, you will need to
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong> Hint: </strong> The answer comes from the output of the code snipped above.</p>
 <p><strong>Answer: </strong> 4</p>
+<p>The answer aligns with the answer to Question 6. Max depth of 4 clearly seems to be giving the best evaluation score on the test set. However, it is improving only marginally from max_depth of 3, which our model doesn't seem to care about. However, we can control the model behaviour by tuning the hyper-parameters. Usually, we rely on regularization techniques to penalize the model for added complexity. However, for decision tree regressors, we don't have an embedded regularization technique (Pruning could be though of as doing the same job). However, we can control the min_samples_per_node and min_info_gain parameters, which would kinda achive the same thing. We only grow the tree if we see substantial samples in the data and get some information / value by increasing tree further.</p>
 
 </div>
 </div>
@@ -14949,6 +14953,108 @@ Predicted selling price for Client 3&#39;s home: $942,666.67
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># TODO: Minimum price of the data</span>
+<span class="n">ptratio</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;PTRATIO&quot;</span><span class="p">]</span>
+<span class="n">lstat</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;LSTAT&quot;</span><span class="p">]</span>
+<span class="n">rm</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;RM&quot;</span><span class="p">]</span>
+
+<span class="n">minimum_ptratio</span> <span class="o">=</span> <span class="n">ptratio</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">minimum_lstat</span> <span class="o">=</span> <span class="n">lstat</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">minimum_rm</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+<span class="c1"># TODO: Maximum price of the data</span>
+<span class="n">maximum_ptratio</span> <span class="o">=</span> <span class="n">ptratio</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">maximum_lstat</span> <span class="o">=</span> <span class="n">lstat</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">maximum_rm</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+
+<span class="c1"># TODO: Mean price of the data</span>
+<span class="n">mean_ptratio</span> <span class="o">=</span> <span class="n">ptratio</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">mean_lstat</span> <span class="o">=</span> <span class="n">lstat</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">mean_rm</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+
+<span class="c1"># TODO: Median price of the data</span>
+<span class="n">median_ptratio</span> <span class="o">=</span> <span class="n">ptratio</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">median_lstat</span> <span class="o">=</span> <span class="n">lstat</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">median_rm</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+
+
+<span class="c1"># TODO: Standard deviation of prices of the data</span>
+<span class="n">std_ptratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ptratio</span><span class="p">)</span>
+<span class="n">std_lstat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">lstat</span><span class="p">)</span>
+<span class="n">std_rm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">rm</span><span class="p">)</span>
+
+
+<span class="c1"># Show the calculated statistics</span>
+<span class="k">print</span> <span class="s2">&quot;PTRATIO Statistics for Boston housing dataset:</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="k">print</span> <span class="s2">&quot;Minimum ptratio: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">minimum_ptratio</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Maximum ptratio: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maximum_ptratio</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Mean ptratio: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_ptratio</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Median ptratio {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">median_ptratio</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Standard deviation of ptratio: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">std_ptratio</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">LSTAT Statistics for Boston housing dataset:</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="k">print</span> <span class="s2">&quot;Minimum LSTAT: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">minimum_lstat</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Maximum LSTAT: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maximum_lstat</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Mean LSTAT: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_lstat</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Median LSTAT {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">median_lstat</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Standard deviation of LSTAT: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">std_lstat</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">RM Statistics for Boston housing dataset:</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="k">print</span> <span class="s2">&quot;Minimum RM: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">minimum_rm</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Maximum RM: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maximum_rm</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Mean RM: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_rm</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Median RM {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">median_rm</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Standard deviation of RM: {:,.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">std_rm</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>PTRATIO Statistics for Boston housing dataset:
+
+Minimum ptratio: 12.60
+Maximum ptratio: 22.00
+Mean ptratio: 18.52
+Median ptratio 19.10
+Standard deviation of ptratio: 2.11
+
+LSTAT Statistics for Boston housing dataset:
+
+Minimum LSTAT: 1.98
+Maximum LSTAT: 37.97
+Mean LSTAT: 12.94
+Median LSTAT 11.69
+Standard deviation of LSTAT: 7.07
+
+RM Statistics for Boston housing dataset:
+
+Minimum RM: 3.56
+Maximum RM: 8.40
+Mean RM: 6.24
+Median RM 6.18
+Standard deviation of RM: 0.64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
@@ -14964,6 +15070,9 @@ Predicted selling price for Client 3&#39;s home: $942,666.67
 </li>
 </ul>
 <p>These prices make perfect sense. Client 3 is looking for 8 rooms in the neighborhood with lowest poverty and highest public school so they would need to pay more vs Client 2 who is looking for 4 rooms in the neighborhood of high poverty and less public school.</p>
+<ul>
+<li>Client 3 is looking at best of everything, so the price would be on the highest side. If we look at the statistics of the independent variables / features, we see the best values for RM, LSTAT and PTRATIO to be ~8, ~2 and ~12 respectively. For such combination the the prices would be on the max side ~1M. Since the Client 3 is looking at max available facilities in all the dimensions, we predict the amount towards the max possible prices. Likewise, Client 2 is looking to get the lower possible facilities, and therefore the ask for the prices should be around the lower value as well ( predicted 190K is actually within the 1st standrad deviation from the min value and much lower than the mean). Client 1 is trying to get just the right mix of all 3 and therefore its ask should be somewhere close to the mean (390K predicted price is close to mean of 450K.)</li>
+</ul>
 
 </div>
 </div>
