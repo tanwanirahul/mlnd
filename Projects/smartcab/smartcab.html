@@ -13128,7 +13128,7 @@ MzMzM7Ma+T/4ewreuDpItQAAAABJRU5ErkJggg==
 <p>In addition to reaching the destination within allotted time, it is very importnat that the journey to the destination is safe for the smartcab's adoption. Safety could be defined as taking the right action with minimal risks within the un-constrained environment. To be able to sense the environment, all the information given as the inputs paramter is therefore important for the following reasons:</p>
 <ol>
 <li>light - To make sure that the agent doesn't move when it shouldn't, to avoid bumping into some other vehicles. </li>
-<li>left - Its important to know the vehicles on the left and its inteded direction. If the light is red, the agent shouldn't move forward or a left if the intended direction of the vehicle on the left is forward or left. So keep this as a state is important.</li>
+<li>left - Its important to know the vehicles on the left and its inteded direction. If the light is red, and the agent would like to take a right turn, it could only do so, if vehciles on the left doesn't move in the forward direction.</li>
 <li>right - Right is not the important state to keep. If the light is red, the agent can only move in the right direction, and since the vehicles on the right doesn't come in the way, it is not important to keep this state.</li>
 <li>oncoming - It is important for the agent to wait till there are no oncoming vahicles on the intersection to avoid the risk of having the collision.</li>
 </ol>
@@ -27692,9 +27692,11 @@ AAAASUVORK5CYII=
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <p><strong><em> Optimal Policy: </em></strong></p>
-<p>If the light is green, check for any oncoming traffic, and follow the waypoint.
-If the light is red, and the waypoint is right, follow the waypoint.
-If the ligh is red, and the waypoing is forward or left, do nothing.</p>
+<ul>
+<li>If the light is green, check for any oncoming traffic, and follow the waypoint.</li>
+<li>If the light is red, and the waypoint is right, and there aren't vehicles on the left moving forward,  follow the waypoint.</li>
+<li>If the ligh is red, and the waypoing is forward or left, do nothing.</li>
+</ul>
 <p><strong><em> State Dictionary: </em></strong></p>
 <p>(waypoint, light, inputs-&gt;left, inputs-&gt;oncoming)</p>
 <p><strong><em> Optimal policy exmaples: </em></strong></p>
@@ -27740,6 +27742,7 @@ If the ligh is red, and the waypoing is forward or left, do nothing.</p>
 <p><strong>Answer:</strong></p>
 <p>Future rewards should be used to estimate the long term reward for peforming an action in the given state. The underlying assumption here is that, not all the states are equal, meaning, there are some hidden states that can lead to very high positive or negative rewards, and we propagate this information backwards so that the agent can take the appropriate action to maximize the reqards. However, in our case, all states are equal. There is an equal chance of making a bad decision, or causing an accident at each state. So there isn't any hidden reward / penalty that we should back propagate for the agent to take tight action.</p>
 <p>The smartcab also has the state information called waypoint which is used to guide the agent on the next action. In this way, the smartcab itself is sort of restricted on what actions it can take based on the waypoint, so future rewards doesn't help here. If the agent follow the waypoint, it receives the positive reward else the penalty, so there isn't the need for the agent to compute future reward, since the maximum reward could only be achieved by following the waypoint at each action.</p>
+<p>In addition to this, another important factor here is that the end goal isn't fixed. The whole purpose of having the long term utility value for the state is to determine how effective the state would be to attain to the final destination / end state. However, in our case, the destination isn't fixed and it changes with each trial. If we really need to find out the true long term utility of the states, we may have to tie it up with the destination itself. So instead of having one utility value per state, we may need N utility values, one for each destination. However, this isn't required as we discussed above.</p>
 
 </div>
 </div>
