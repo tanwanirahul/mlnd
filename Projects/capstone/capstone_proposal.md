@@ -12,7 +12,7 @@ Traffic Signs Classification for Automonous Vehicles.
 Traffic sign detection and classification is one of the preliminary requirement for autonomous driving to be useful in the real world context. Prior work in this field has mainly focussed on building the solution using image processing techniques, and hand coded features followed by a classification model[2][3] with few exceptions[4]. The relevant work in the field has been well summarized in [1]. With the recent advancements in machine learning, specifically in the areas of computer vision using deep learning techniques, we aim to build the robust traffic sign detection system that can accurately identify the traffic sign in real time without requiring the prior knowledge of traffic sign locations.
 
 ### Problem Statement
-Traffic signs recognition has direct real world applications in the autonomous driving and in driver assistance systems. Traffic signs are intended to be visible for drivers and have very little variability in appearance. Natual variations and calamities such as viewpoint variations, lightning conditions, sun glare, occlusions, physical damage and color fading etc contribute additional complexity and make the problem even more challenging. In this project, we propose to build the system for detecting the correct traffic sign given the complex natural images. 
+Traffic signs recognition has direct real world applications in the autonomous driving and in driver assistance systems. Traffic signs are intended to be visible for drivers and have very little variability in appearance. Natual variations and calamities such as viewpoint variations, lightning conditions, sun glare, occlusions, physical damage and color fading etc contribute additional complexity and make the problem even more challenging. In this project, we propose to build the system for detecting the correct traffic sign given the complex natural images. Given we have more than 2 images, we will build the model for multi-class classification.
 
 
 ### Datasets and Inputs
@@ -50,6 +50,14 @@ Annotations are provided in CSV files. Fields are separated by ";"   (semicolon)
 - The training data annotations will additionally contain 
 ClassId: Assigned class label
 
+######Class Distribution:
+
+To precisely define the overall solution approach and evaluation metrics, it is important to understand the underlying distribution for the target variable. Following image shows the distribution across 43 traffic signs represented in the dataset:
+
+- Normal Scale: ![Distribution](images/distribution.png)
+- Log Scale: ![Distribution](images/log_distribution.png)
+
+We can clearly see the distribution is uneven / imbalanced. This suggests we should pay attention on how to effitiently use the data for training and validation set, need for balancing and the effective measure for model evaluation.
 
 ### Solution Statement
 
@@ -58,7 +66,7 @@ Most of the prior algorithms and solutions for this problem have employed tradit
 
 ### Benchmark Model
 
-The benchmarks for this problem are maintained and made available by INI benchmarks[5]. Peformance is measure for each class individually and also the overall peformance across all traffic signs. Current best score across all traffic signs stands to be 99.46%. To evaluate our model against the benchmarks, we can do the submission on INI benchmarks portal.
+The benchmarks for this problem are maintained and made available by INI benchmarks[5]. Peformance is measure for each class individually and also the overall peformance across all traffic signs. Current best score across all traffic signs stands to be 99.46%. Yann Lecun et. al. used the CNN based deep learning approach for the same problem, their architecture and performance is descriobe in [4]. To evaluate our model against the benchmarks, we can do the submission on INI benchmarks portal.
 
 ######Sumission instructions
 - The results will be submitted as single CSV.
@@ -70,6 +78,8 @@ The benchmarks for this problem are maintained and made available by INI benchma
 ### Evaluation Metrics
 
 The algorithms are evaluated and ranked based on the correct classification rate (CCR). CCR could be defined as 1 - misclassification error rate. In addition to overall performance of the model, each traffic sign is evaluated separately and performance for each of the sign is measured. The samples are un-weighted which implies all the traffic signs are euqally important.
+
+Like we have seen above, we have an imbalanced dataset, so CCR (accuracy) alone may not be the best way to evaluate the performance of the model. We should rather use the measure that takes into account the precision and recall both to evaluate. F1-Score would be a better evaluation metric to use. In addition to the single metric, it is importatnt to analyze the peformance for each of the class separately. Confusion matrix would also be able to understand how the model is performing for each of the traffic sign we have in the dataset.
 
 ### Project Design
 
