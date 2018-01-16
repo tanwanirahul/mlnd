@@ -234,3 +234,62 @@ def load_preprocessed_test_data(config):
     return _load_preprocessed_data(config, "test")
 
 
+def constrast_stretching(images, is_gray=True):
+    '''
+    Given the images, return the images after applying
+    contrast stretching to each of the elements.
+    '''
+    dimension = (32, 32) if is_gray else (32, 32, 3)
+    image_size = (32 * 32) if is_gray else (32 * 32 * 3)
+
+    def apply_rescale_intensity(img, percentile_range = (3, 97)):
+        '''
+        Given the image, apply the constrast stretching.
+        '''
+        img = img.reshape(dimension)
+        lb, ub = np.percentile(img, percentile_range)
+        img_rescaled = exposure.rescale_intensity(img, in_range=(lb, ub))
+        return img_rescaled.reshape(-1, image_size)
+
+    scaled_images = np.apply_along_axis(apply_rescale_intensity, 1, images.reshape(-1, image_size))
+    return scaled_images.reshape(-1, *dimension)
+
+
+def adaptive_histograms(images, is_gray=True, clip_limit=0.1):
+    '''
+    Given the images, return the images after applying
+    adaptive histogram to each of the elements.
+    '''
+    dimension = (32, 32) if is_gray else (32, 32, 3)
+    image_size = (32 * 32) if is_gray else (32 * 32 * 3)
+
+    def apply_adaptive_hist(img):
+        '''
+        Given the image, apply the adaptive histogram.
+        '''
+        img = img.reshape(dimension)
+        img_processed = exposure.equalize_adapthist(img, clip_limit=clip_limit)
+        return img_processed.reshape(image_size)
+
+    scaled_images = np.apply_along_axis(apply_adaptive_hist, 1, images.reshape(-1, image_size))
+    return scaled_images.reshape(-1, *dimension)
+
+
+def equalize_hist(images, is_gray=True):
+    '''
+    Given the images, return the images after applying
+    histogram equalization to each of the elements.
+    '''
+    dimension = (32, 32) if is_gray else (32, 32, 3)
+    image_size = (32 * 32) if is_gray else (32 * 32 * 3)
+
+    def apply_equalize_hist(img):
+        '''
+        Given the image, apply the histogram eqalization transform.
+        '''
+        img = img.reshape(dimension)
+        img_processed = exposure.equalize_hist(img, nbins=512)
+        return img_processed.reshape(image_size)
+
+    scaled_images = np.apply_along_axis(apply_equalize_hist, 1, images.reshape(-1, image_size))
+    return scaled_images.reshape(-1, *dimension)
