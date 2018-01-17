@@ -6,6 +6,9 @@ import cv2
 import sklearn
 from sklearn.preprocessing import LabelBinarizer
 from sklearn import preprocessing
+from skimage import exposure
+from skimage.filters import gaussian
+import random
 
 def load_train_and_validation_set(base_dir, data_dir):
     '''
@@ -234,6 +237,15 @@ def load_preprocessed_test_data(config):
     return _load_preprocessed_data(config, "test")
 
 
+def blur(image):
+    '''
+    Given the input image, make it blur by applying the
+    Guassian filter.
+    '''
+    rand = random.random()
+    return gaussian(train_features[random_image], sigma=rand)
+
+
 def constrast_stretching(images, is_gray=True):
     '''
     Given the images, return the images after applying
@@ -255,7 +267,7 @@ def constrast_stretching(images, is_gray=True):
     return scaled_images.reshape(-1, *dimension)
 
 
-def adaptive_histograms(images, is_gray=True, clip_limit=0.1):
+def adaptive_histograms(images, is_gray=True, clip_limit=0.1, add_blur=True):
     '''
     Given the images, return the images after applying
     adaptive histogram to each of the elements.
@@ -269,6 +281,9 @@ def adaptive_histograms(images, is_gray=True, clip_limit=0.1):
         '''
         img = img.reshape(dimension)
         img_processed = exposure.equalize_adapthist(img, clip_limit=clip_limit)
+        if add_blur:
+             img_processed = blur(img_processed)
+        
         return img_processed.reshape(image_size)
 
     scaled_images = np.apply_along_axis(apply_adaptive_hist, 1, images.reshape(-1, image_size))
