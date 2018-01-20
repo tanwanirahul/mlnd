@@ -2,7 +2,7 @@
 
 The project consist of 2 code file. The main code is in capstone.ipynb and the supporting code is in utils.py.
 
-###Dependencies:
+### Dependencies:
 
 To be able to run the project, we would need following python dependencies to be available:
 
@@ -17,7 +17,7 @@ To be able to run the project, we would need following python dependencies to be
 - matplotlib
 - cv2
 
-###Data:
+### Data:
 
 The capstone.ipynb contains the required code to download the dataset from appropriate online source and cache it on the local device.
 
