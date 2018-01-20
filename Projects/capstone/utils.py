@@ -97,7 +97,7 @@ def plot_images(images, label_indices, label_names, label_preds=None,
                label_indices[i], cls_true_name[:32], min_value, max_value)
         else:
             # Name of the predicted class.
-            cls_pred_name = class_names[label_preds[i]]
+            cls_pred_name = label_names[label_preds[i]]
             xlabel = "True: {0}\nPred: {1}".format(cls_true_name, cls_pred_name)
 
         # Show the classes as the label on the x-axis.
@@ -110,14 +110,18 @@ def plot_images(images, label_indices, label_names, label_preds=None,
     plt.show()
 
 
-def display_sample_images(images, labels, label_names, **kwargs):
+def display_sample_images(images, labels, label_names,predictions=None,**kwargs):
     '''
     Given the set of images and labels, display randomly sampled images.
     '''
     samples = np.random.choice(range(len(images)), 24)
     sample_images = np.array([images[i] for i in samples])
     sample_labels = np.array([labels[i] for i in samples])
-    plot_images(sample_images, sample_labels, label_names, **kwargs)
+    if predictions is not None:
+        sample_predictions = np.array([predictions[i] for i in samples])
+    else:
+        sample_predictions = None
+    plot_images(sample_images, sample_labels, label_names,label_preds=sample_predictions, **kwargs)
 
 
 def to_grayscale(images):
@@ -243,7 +247,7 @@ def blur(image):
     Guassian filter.
     '''
     rand = random.random()
-    return gaussian(train_features[random_image], sigma=rand)
+    return gaussian(image, sigma=rand)
 
 
 def constrast_stretching(images, is_gray=True):
