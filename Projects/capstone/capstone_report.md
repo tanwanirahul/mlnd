@@ -15,9 +15,33 @@ Traffic sign detection and classification is one of the preliminary requirement 
 
 Traffic signs recognition has direct real world applications in the autonomous driving and in driver assistance systems. Traffic signs are intended to be visible for drivers and have very little variability in appearance. Natual variations and calamities such as viewpoint variations, lightning conditions, sun glare, occlusions, physical damage and color fading etc contribute additional complexity and make the problem even more challenging. In this project, we propose to build the system for detecting the correct traffic sign given the complex natural images. Given we have more than 2 images, we will build the model for multi-class classification.
 
+To build the solution, we will use deep learning techniques, specificically, the convolutional neural networks and define this as the computer vision problem. The details on the algorithm, overall solution, and the results obtained are summarized below. To gain the most of the solution, we have used the pre-processing techniques and data augmentation to build the robust model, that can handle the natural variations in the traffic sign images.
+
 ### Metrics
 
 There are multiple ways to evaluate the model performance for the multi-class classification model. The dataset used for this project comes from the German Traffic Signs Recognition Benchmarks (GTSRB) that uses CCR to rank the submissions. CCR is widely known as accuracy in the community. Though accuracy may gives us idea on the general model performance, it may not give very precise information for the imbalanced datasets. The GTSRB dataset is indeed the imbalanced dataset and hence we use other evaluation metrics in addition to accuracy. In specific, we would look at f1-score to incorporate both precision and reall balancing, and log loss. Furthermore, analyzing the confusion matrix would be very important to understand the class wise performance.
+
+######F1-Score:
+Unlike accuracy, the F-Score is a balanced measure that takes into account both the precision and recall to compute the final score. 
+
+- Precision - is the measrure of how accurate the model is in predictions (True Positives / Total Predicted Positives)
+- Recall - is the measure of capture / coverage (True Positives / Total Real Positives)
+
+F1-score is the harmonic mean of precion and recall rates and is defined as:
+
+![F1 Score](images/f1_score.png)
+
+######Log Loss:
+The general idea behind Log-Loss is to capture the goodness of the model not be based on the true predictions but also incorporating the confidence the model has on each of its predictions. Intutively, an ideal classifier is a one, that not only classifies all the samples correctly (accuracy 100%) but is also 100% confident in each of the predictions (log loss - 0). Mathematically, it is defined as:
+
+![Log Loss](images/log_loss.png)
+
+- N = Number of samples
+- M = Number of classes
+- yij = 1 if j is the true label for sample i, 0 otherwise
+- pij = Jth class probability of the classifier for sample i.
+
+The notion of confidence is captured in terms of probability. This is good, as the neural network models (including ours) has the final softmax layer to get the probability distribution across each of the class.
 
 
 ## II. Analysis
@@ -42,13 +66,10 @@ We used the dataset that was reshaped to 32x32 size each. The entire dataset was
 
 ### Exploratory Visualization
 
-######Class Distribution (Training Data):
-![Distribution](images/distribution.png)
+######Class Distribution (Training and Validation Data):
+![Distribution](images/training_and_validation_class_dist.png)
 
 We can clearly see the distribution is uneven / imbalanced. This suggests we should pay attention on how to effitiently use the data for training and validation set, need for balancing and the effective measure for model evaluation.
-
-######Class Distribution (Validation Data):
-![Validation Distribution](images/validation_class_distribution.png)
 
 Looking at the graphs above, we can make following observation:
 
@@ -59,7 +80,9 @@ Looking at the graphs above, we can make following observation:
 
 ![Sample Images](images/sample_training_images_2.png)
 
-The schematic above shows the various classes and corresponding images. Let us analyze the images belonging to the same class to understand how similar / disimilar they look.
+The schematic above shows the various classes and corresponding images. Here, the min and max captures the minimum and maximum pixel value observed for the image. The values between 0 and 255 indicate we are using the 8 bits to capture the R/G/B channel values and that the images are are not normalized.
+
+Let us analyze the images belonging to the same class to understand how similar / disimilar they look.
 
 ######Variability for the same class:
 
@@ -69,7 +92,24 @@ Here, we analyze the different representations for the same class. We see that t
 
 ### Algorithms and Techniques
 
-Most of the prior algorithms and solutions for this problem have employed traditional image processing techniques, where the relavent features are hand-coded, and global signs are first detected using various heuristics and color thresholding techniques, the detected windows are then feed into the classifier for the final classification [2][3][6][7]. However, we will follow a learning based approach to effitiently learn the relevant features and detect the appropriate traffic signs. We plan to use the convolutional neural network based model to detect and classify the traffic signs. To make sure the model is robust, we will apply various data/image augmentation techniques before learning the model.
+Most of the prior algorithms and solutions for this problem have employed traditional image processing techniques, where the relavent features are hand-coded, and global signs are first detected using various heuristics and color thresholding techniques, the detected windows are then feed into the classifier for the final classification [2][3][6][7]. However, we will follow a learning based approach to effitiently learn the relevant features and detect the appropriate traffic signs. We plan to use the convolutional neural network based model to detect and classify the traffic signs. 
+
+#####Convolutional Neural Network:
+Unlike the typical feed forward neural nets, the convolutional neural nets are specifically designed for the image data. In a staight FFN, each feature from the input is given to each of the nueros in the first layer, leading to fxn weights (f = feature dimensions, n = neurons in the layer) to be assigned and learned. This doesn't quite scale well when the input is an image. Even a low resolution image can typically be 200x200x3 pixel in size. This makes the input dimensions alone 120000. If we add many nuerons this number would quickly grow up. Too many weights pose the scalability challenge. We discuss below on how convnets deal with this challenge in an effitient way.
+
+In addition to this, FFN doesn't preserve the spatial representation of the input which is very important when learing from the image. The pixel sourrounding a particular pixel has a spatial meaning and this must be preserved. Furthermore, FFN expects the input data to be a flat vector, which is very unnatural when we are working with images. Images capturing the physical objects are usually represented in 3 dimensions width x height x depth (color channels). Due to these challenges, FFNs are not very suitable for computer vision tasks in general. 
+
+CNNs instead of treating the input image as a flat feaure vector, they divide the image into regions and extract the usful information from those regions. These regions are designed to preserve the spatial information. With CNN, the general idea is that, the final image is built of multiple sub-elements which in turn are made up even smaller geometrical representations (Car -> (wheels, engine, doors, bonet), wheels -> (circular objects with some design in between)).CNNs learn this hierarchical representations by building multi layer convolution layer. Each conv layer acts on a region at a time (2d patch) and applies the series of filters which are passed to the next layer. The next layer builds on these first level features (extracted through filters) to learn the higher level abstractions / concepts. A typical CNN consists of following layers:
+
+- **Convolution layer** applies the series of filters on a 2d patch of image giving us the output of 3 dimensions (patch_w * patch_h * d_filters). They are passed through activation function (usually relu) for non linear transformation by thresholding the output at 0.
+- **Pooling layer** applies the downsampling operation by preserving only the most relevant aspects (max or avg pooling) of the patch, thus reducing the output dimensions by a factor of stride.
+- **Fully connected layer** takes all the extracted features from the images and learns the representation to classify the final class from these features.
+
+CNNs deal with the curse of dimensionality of weights by a concept called weight sharing. The intution behind weight sharing is that, since we are focused on learning the features, it doesn't matter where do they occur in the image. So far we can learn the weights to detect them in a patch, we can continue to use those weights for all the patches of an image. This greatly reduce the dimensions that the network has to learn. The dimensions now depend on the patch width, height and filters rather than the input width and height. The patches usually are very small as compare to the original image. 
+
+We build our final solution on the same concepts. The implementation below describe the details on the overall network arhitecture and individual layers to understand how these are being used in the context of traffic sign detection.
+
+To make sure the model is robust, we will enrich the data with various data/image augmentation techniques before learning the model.
 
 ### Benchmark
 
@@ -116,6 +156,12 @@ We built a network architecture with 3 convolution layers followed by 2 fully co
 
 ![Network Architecture](images/architecture.png)
 
+We first started with 2 conv + max pool layers with 32 and 64 filters respectively. However, given the number of classes we have in the dataset and their varied represention, we immediately felt that total of 64 filters may not be enough for the classifier to accurately predict the right outcome. We then added 3rd conv layer with 128 filters to capture extract more higher-level features from the data.
+
+For the fully connected layer, we tried with various different shapes: (128 -> 128), (256 -> 256), (512 -> 192). These changes didn't have significant impact on the final scores. However, the (512 -> 192) architecture shape was marginally better than the other options we considered.
+
+We also played with the varying drop out strategies. We started off with flat keep-prob of 0.7 for final conv layer and fully connected layer. We then switched to 0.6 which performed better. Later we added, drop outs to first two conv layers as well, however keep_prob=0.6 was too aggresive of a drop out for the initial layers given the limited filters. We then added progressive drop outs for each layer that gave us the best results.
+
 Though accuracy of 94% is much better than the base model we started of with, it is still far from the human accuracy. Also, the GTSRB benchmarks shows the top performance of 99.8% on the same dataset. We will continue to build on top of the existing solution to improve the performance.
 
 
@@ -136,7 +182,7 @@ The picture below shows some of the augmented images for various classes.
 It is also important to look at the class distirbution after augmentation and under how does it compare with the original class distribution.
 
 ######Class distribution before and after image augmentation:
-![Class distribution after Data Augmentation](images/class_distr_after_augmentation.png)
+![Class distribution after Data Augmentation](images/before_and_after_augm_class_distr.png)
 
 As we see above, the distribution after the augmentation is representative of the original distribution.
 
